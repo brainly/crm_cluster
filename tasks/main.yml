@@ -1,0 +1,43 @@
+---
+- name: Include some basic variables generated on the fly
+  include: pre_flight.yml tags=base
+
+- name: Create directory for cluster config snippets
+  file:
+    name: /etc/corosync/cluster_resources.d/
+    state: directory
+    mode: 0750
+    owner: root
+    group: root
+  tags: base
+
+- name: Put cluster variables snippet
+  template:
+    dest: /etc/corosync/cluster_resources.d/01-cluster_variables.conf
+    src: cluster_variables.conf.j2
+    mode: 0640
+    owner: root
+    group: root
+  notify:
+    - update crm config
+  tags: base
+
+- include: single_vip_single_service_cluster.yml tags=base
+  when: single_vip_single_service_cluster == True
+
+- include: single_vip_multi_service_cluster.yml tags=base
+  when: single_vip_multi_service_cluster == True
+
+- include: multi_vip_multi_service_cluster.yml tags=base
+  when: multi_vip_multi_service_cluster == True
+
+#Join the configuration snippets and reload cluster configuration if necessary:
+- name: Join configuration snippets
+  assemble:
+    dest: /etc/corosync/cluster_resources.config
+    remote_src: True
+    src: /etc/corosync/cluster_resources.d/
+    mode: 0640
+    owner: root
+    group: root
+  tags: base

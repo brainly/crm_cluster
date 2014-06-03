@@ -1,0 +1,7 @@
+{% for host in play_hosts | sort %}
+{% set vip_name = "vip-" + host %}
+order crm_start_service-{{ vip_name }} \
+    inf: \
+        crm_service-clone:start \
+        crm_{{ vip_name }}:start
+{% endfor %}

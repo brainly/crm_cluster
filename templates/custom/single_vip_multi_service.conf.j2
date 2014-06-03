@@ -1,0 +1,8 @@
+{# Nope!, you do not want to tie clone to VIP! #}
+
+{# Define the order the services are started/stopped #}
+order crm_service_start \
+    inf: \
+        crm_service-clone:start \
+        crm_vip:start
+

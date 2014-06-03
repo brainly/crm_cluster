@@ -1,0 +1,43 @@
+---
+# NOTICE - in case when multiple handlers are invoked, Ansible runs them
+# in order by which they were defined !
+
+# Here we:
+#  - run this handler only once per role, and only on one host:
+#  - chain operations together, execute them one after another
+- name: update crm config
+  command: crm configure property maintenance-mode=true
+  when: inventory_hostname == designated_host
+  notify: update crm config - erase previous configuration
+
+- name: update crm config - erase previous configuration
+  command: cibadmin --erase --force
+  when: inventory_hostname == designated_host
+  notify: update crm config - find orphaned services
+
+- name: update crm config - find orphaned services
+  shell: "crm status | awk '/ORPHANED/ {print $1;}'"
+  register: orphaned_services
+  when: inventory_hostname == designated_host
+  notify:
+    # Services are not always orphaned, so we call two handlers in one shot.
+    # They will be called in order they were defined and if there are no servi-
+    # ces to cleanup, the other handler will still be called.
+    - update crm config - cleanup orphaned services
+    - update crm config - replace configuration
+
+- name: update crm config - cleanup orphaned services
+  command: "crm resource cleanup {{ item }}"
+  when: inventory_hostname == designated_host
+  with_flattened: orphaned_services.stdout_lines
+
+- name: update crm config - replace configuration
+  command: crm configure load replace /etc/corosync/cluster_resources.config
+  when: inventory_hostname == designated_host
+  notify: update crm config - verify new configuration
+
+- name: update crm config - verify new configuration
+  when: inventory_hostname == designated_host
+  command: crm_verify -L
+
+# Disabling maintenance mode is not necessary, we have already purged the CIB

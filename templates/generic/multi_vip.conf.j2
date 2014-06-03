@@ -1,0 +1,40 @@
+{#
+
+This is a template for a cluster of VIPs floating between nodes.
+
+Template parameters taken from Ansible vars/environment/facter:
+ * crm_vip_prefix
+ * crm_vip_range.begin, crm_vip_range.end
+
+#}
+
+{# First, lets check whether we have enough VIP indexes assigned
+   to begin with... -#}
+{% if play_hosts | length > (crm_vip_range.end - crm_vip_range.begin) %}
+    {#-
+        We can fail this template at the playbook level, but then we would
+        have to copypaste the relevant code every time we re-use this template.
+        So the idea is that we do it here even though we do it in awkward
+        way - by using an undefined variable.
+    #}
+    {{ _NOT_ENOUGH_VIP_IPS_PLEASE_CHECK_THE_TEMPLATE | mandatory }}
+{%- endif -%}
+
+{# Create a VIP for each host in the group #}
+{% for host in play_hosts | sort %}
+{% set vip_name = "vip-" + host %}
+{# Add VIP #}
+primitive crm_{{ vip_name }} ocf:heartbeat:IPaddr2 \
+    params ip={{ crm_vip_prefix + '.' + (crm_vip_range.begin + loop.index0) | string }} \
+    cidr_netmask=32 \
+    nic=lo \
+    lvs_support=false \
+    op monitor interval=5s
+
+{# Deal with VIP placement #}
+location crm_{{ vip_name }}-default_location \
+    crm_{{ vip_name }} \
+    rule \
+        100: #uname eq {{ host }}
+
+{% endfor %}

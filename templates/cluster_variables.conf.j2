@@ -1,0 +1,13 @@
+{# No load-balancing for now, failed over nodes
+should stay where they are unless we set any
+preference. #}
+property default-resource-stickiness=1
+
+{# Create an opt-out cluster, #}
+property symmetric-cluster=true
+
+{# We do not have such facility yet #}
+property stonith-enabled=false
+
+{# Freeze the cluter in case we loose the quorum: #}
+property no-quorum-policy=freeze

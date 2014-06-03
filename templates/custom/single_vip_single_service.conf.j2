@@ -1,0 +1,10 @@
+{# Define the order the services are started/stopped #}
+order crm_start_service \
+    inf: \
+        crm_service:start \
+        crm_vip:start
+
+{# Define service affinity to the VIP #}
+colocation service-with-vip inf: \
+        crm_service \
+        crm_vip

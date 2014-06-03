@@ -1,0 +1,57 @@
+---
+# DO NOT mark it as "state: stopped". This will conflict with
+# Pacemaker - Ansible will be turning it off, Pacemaker - on.
+- name: Disable lsb script control of the service
+  service:
+    name: "{{ crm_lsb_service_name }}"
+    enabled: no
+
+- name: Put single-VIP config snippet
+  template:
+    src: generic/single_vip.conf.j2
+    dest: "/etc/corosync/cluster_resources.d/20-single_vip_single_service_VIP.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - update crm config
+
+- name: Put single-service config snippet
+  template:
+    src: generic/single_lsb_service.conf.j2
+    dest: "/etc/corosync/cluster_resources.d/30-single_vip_single_service_service.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - update crm config
+
+- name: Put config glue snippet
+  template:
+    src: custom/single_vip_single_service.conf.j2
+    dest: "/etc/corosync/cluster_resources.d/40-single_vip_single_service_glue.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - update crm config
+
+#Install resource location script:
+- name: Provide limited sudo rights to the resource location script
+  copy:
+    src: resource_locate.sudo
+    dest: /etc/sudoers.d/resource_locate
+    owner: root
+    group: root
+    mode: 0440
+
+- name: Copy the resource location script
+  copy:
+    src: resource_locate.py
+    dest: /opt/resource_locate.py
+    owner: root
+    group: root
+    mode: 0755
+
+# NOTICE - you may either reconfigure your monitoring here or provide the
+# modified configuration in the role that sets up the service itself.

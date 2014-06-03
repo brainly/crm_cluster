@@ -1,0 +1,24 @@
+{#
+
+This is a template for single VIP floating between nodes.
+
+Template parameters taken from Ansible vars/environment/facter:
+ * crm_vip_prefix
+ * crm_vip_index
+ * crm_preffered_location
+
+#}
+
+{# Add VIP #}
+primitive crm_vip ocf:heartbeat:IPaddr2 \
+    params ip={{ crm_vip_prefix + '.' + crm_vip_index | string }} \
+    cidr_netmask=32 \
+    nic=lo \
+    lvs_support=false \
+    op monitor interval=5s
+
+{# Deal with VIP placement #}
+location crm_vip-default_location \
+    crm_vip \
+    rule \
+        100: #uname eq {{ crm_preffered_location | default(designated_host) }}

@@ -1,0 +1,8 @@
+---
+- name: Find the designated host
+  set_fact:
+    designated_host: '{{ (play_hosts | sort)[0] }}'
+
+- name: Show which host is the designated one
+  debug:
+    var: designated_host

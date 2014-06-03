@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Pawel Rozlach
+  company: Zadane.pl sp. z o.o.
+  description: Automated configuration of Pacemaker clusters
+  license: Apache 2.0
+  min_ansible_version: 1.5
+  platforms:
+    - name: Debian
+      versions:
+        - squeeze
+        - wheezy
+  categories:
+  - clustering
+dependencies:
+  - crm_base

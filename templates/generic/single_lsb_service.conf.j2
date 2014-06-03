@@ -1,0 +1,13 @@
+{#
+
+This is a template for a simple service running on just one node binded to the VIP floating betwean nodes.
+
+Template parameters taken from Ansible vars/environment/facter:
+ * crm_lsb_service_name
+
+#}
+
+{# Setup service #}
+primitive crm_service lsb:{{ crm_lsb_service_name }} \
+    op monitor interval="1s" \
+    meta failure-timeout="3s"

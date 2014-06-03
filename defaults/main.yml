@@ -1,0 +1,6 @@
+---
+# By default cluster-specific functionality is not enabled, only the common
+# part.
+single_vip_single_service_cluster: False
+single_vip_multi_service_cluster: False
+multi_vip_multi_service_cluster: False

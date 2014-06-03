@@ -1,0 +1,21 @@
+{#
+
+This is a template for a simple service running on all nodes and a VIP floating betwean them.
+
+Template parameters taken from Ansible vars/environment/facter:
+ * crm_lsb_service_name
+
+#}
+
+{# Setup service #}
+primitive crm_service lsb:{{ crm_lsb_service_name }} \
+    op monitor interval="1s" \
+    meta failure-timeout="3s"
+
+{# Clone service to all the nodes in the group #}
+clone crm_service-clone \
+    crm_service \
+    meta \
+        clone-max="{{ play_hosts | length | string }}" \
+        clone-node-max="1" \
+        globally-unique="false"

@@ -1,0 +1,30 @@
+---
+- name: Put multi-VIP config snippet
+  template:
+    src: generic/multi_vip.conf.j2
+    dest: "/etc/corosync/cluster_resources.d/20-multi_vip_multi_service_VIP.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - update crm config
+
+- name: Put multi-service config snippet
+  template:
+    src: generic/cloned_lsb_service.conf.j2
+    dest: "/etc/corosync/cluster_resources.d/30-multi_vip_multi_service_service.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - update crm config
+
+- name: Put config glue snippet
+  template:
+    src: custom/multi_vip_multi_service.conf.j2
+    dest: "/etc/corosync/cluster_resources.d/40-multi_vip_multi_service_glue.conf"
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - update crm config
