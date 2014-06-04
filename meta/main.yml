@@ -13,4 +13,4 @@ galaxy_info:
   categories:
   - clustering
 dependencies:
-  - crm_base
+  - vespian.crm_base
