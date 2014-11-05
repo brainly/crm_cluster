@@ -9,8 +9,10 @@ Template parameters taken from Ansible vars/environment/facter:
 
 {# Setup service #}
 primitive crm_service lsb:{{ crm_lsb_service_name }} \
-    op monitor interval="1s" \
-    meta failure-timeout="3s"
+    op monitor interval="{{ crm_monitor_interval } \
+    meta \
+        failure-timeout="{{ crm_failure_timeout }}" \
+        migration-threshold="{{ crm_migration_threshold }}"
 
 {# Clone service to all the nodes in the group #}
 clone crm_service-clone \

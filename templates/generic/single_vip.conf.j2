@@ -15,7 +15,10 @@ primitive crm_vip ocf:heartbeat:IPaddr2 \
     cidr_netmask=32 \
     nic=lo \
     lvs_support=false \
-    op monitor interval=5s
+    op monitor interval="{{ crm_monitor_interval } \
+    meta \
+        failure-timeout="{{ crm_failure_timeout }}" \
+        migration-threshold="{{ crm_migration_threshold }}"
 
 {# Deal with VIP placement #}
 location crm_vip-default_location \

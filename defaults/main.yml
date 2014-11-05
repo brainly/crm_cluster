@@ -4,3 +4,8 @@
 single_vip_single_service_cluster: False
 single_vip_multi_service_cluster: False
 multi_vip_multi_service_cluster: False
+
+# Should be OK for most setups:
+crm_monitor_interval: 10
+crm_migration_threshold: 30
+crm_failure_timeout: 30m
