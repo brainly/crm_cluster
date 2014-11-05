@@ -22,6 +22,11 @@ There are some mandatory variables:
 - *crm_vip_index* - role-specific index of the service translated directly
     to 4th octet of the VIP
 - *crm_preffered_location* - preffered location where the VIP should run.
+- *crm_monitor_interval* - Monitor resource every that many seconds
+- *crm_migration_threshold* - Migrate away from the node after
+    crm_monitor_interval * migration-threshold = X seconds
+- *crm_failure_timeout* - forget about failures (and migrate resource back if
+    applicable) after that time
 
     Whether one or more of theese variables are required or not varies greatly
 on the the cluster template used. I.E. a *multi_vip_multi_service* cluster does
